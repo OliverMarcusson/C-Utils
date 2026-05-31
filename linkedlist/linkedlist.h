@@ -31,6 +31,10 @@ struct LinkedList {
   // Moves ownership of the item to the caller.
   void *(*pop)(LL *ll);
 
+  // Removes item at the specified index from the list and returns it.
+  // Moves ownership of the item to the caller.
+  void *(*remove)(LL *ll, int idx);
+
   // Returns the length of the list.
   size_t (*len)(LL *ll);
 
@@ -41,6 +45,20 @@ struct LinkedList {
   // Returns `true` if the specified item exists in the list.
   // Returns `false` if it does not.
   bool (*contains)(LL *ll, void *item);
+
+  // Frees the memory allocated by the linked list.
+  // Calls the specified lists `drop_fn` on every item if defined.
+  void (*free)(LL *ll);
+
+  // Prints the list using the specified lists `print_fn` if defined.
+  // `print_fn` must return a heap-allocated string.
+  void (*print)(LL *ll);
 };
+
+LinkedList linkedlist_new(
+  size_t item_size,
+  void (*drop_fn)(void *data),
+  char *(*print_fn)(void *data)
+);
 
 #endif // !LINKEDLIST_H
