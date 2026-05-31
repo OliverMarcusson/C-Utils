@@ -1,5 +1,5 @@
 #ifndef VEC_H
-#define VEC_H 
+#define VEC_H
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -35,8 +35,8 @@ struct Vec {
 };
 
 // Returns a new vector for a specific item size.
-// Define `drop_fun` if items stored in the vec needs to be deconstructed on free.
-// Must be freed with the vector's `free` method.
+// Define `drop_fun` if items stored in the vec needs to be deconstructed on
+// free. Must be freed with the vector's `free` method.
 Vec vec_new(size_t item_size, _VecDropFn drop, _VecPrintFn print);
 
 // Returns a borrowed, dereferenced item from the specified index.

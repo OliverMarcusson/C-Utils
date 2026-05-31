@@ -1,9 +1,9 @@
+#include "vec.h"
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "vec.h"
 
 typedef struct {
   void *items;
@@ -14,9 +14,7 @@ typedef struct {
   _VecPrintFn print;
 } VecData;
 
-static VecData *_vec_data(Vec *v) {
-  return v->_data;
-}
+static VecData *_vec_data(Vec *v) { return v->_data; }
 
 // Returns true if idx is a valid vector index and false if it's not.
 // -1 is interpreted as the last item in a vector,
@@ -90,7 +88,7 @@ static void _vec_pop_into(Vec *v, void *dst, int idx);
 static bool _vec_insert(Vec *v, void *item, int idx);
 static void _vec_print(Vec *v);
 
-// Returns a borrowed pointer to an item in the vector. 
+// Returns a borrowed pointer to an item in the vector.
 // Do not free this.
 static void *_vec_get_ptr(Vec *v, int idx) {
   if (!_is_valid_idx(v, idx)) {
@@ -103,21 +101,15 @@ static void *_vec_get_ptr(Vec *v, int idx) {
   return (char *)data->items + idx * data->item_size;
 }
 
-static size_t _vec_len(Vec *v) {
-  return _vec_data(v)->len;
-}
+static size_t _vec_len(Vec *v) { return _vec_data(v)->len; }
 
-static size_t _vec_cap(Vec *v) {
-  return _vec_data(v)->cap;
-}
+static size_t _vec_cap(Vec *v) { return _vec_data(v)->cap; }
 
-static size_t _vec_item_size(Vec *v) {
-  return _vec_data(v)->item_size;
-}
+static size_t _vec_item_size(Vec *v) { return _vec_data(v)->item_size; }
 
 // Returns a new vector for a specific item size.
-// Define `drop_fun` if items stored in the vec needs to be deconstructed on free.
-// Must be freed with the vector's `free` method.
+// Define `drop_fun` if items stored in the vec needs to be deconstructed on
+// free. Must be freed with the vector's `free` method.
 Vec vec_new(size_t item_size, _VecDropFn drop, _VecPrintFn print) {
   Vec v;
   VecData *data = malloc(sizeof(VecData));
@@ -153,7 +145,8 @@ Vec vec_new(size_t item_size, _VecDropFn drop, _VecPrintFn print) {
   return v;
 }
 
-// Frees the vector and deconstructs its data if the vector's drop function is defined.
+// Frees the vector and deconstructs its data if the vector's drop function is
+// defined.
 static void _vec_free(Vec *v) {
   VecData *data = _vec_data(v);
 
@@ -173,7 +166,7 @@ static void _vec_free(Vec *v) {
 // Item must be primitive or heap allocated.
 static bool _vec_push(Vec *v, void *item) {
   if (!_inc_vec_cap(v)) {
-    return false; 
+    return false;
   }
 
   VecData *data = _vec_data(v);
@@ -208,8 +201,8 @@ static void *_vec_pop(Vec *v, int idx) {
   return popped_item;
 }
 
-// Pops the item at index idx into the provided buffer dst, moving it's ownership.
-// If data is heap allocated, it needs to be freed by the caller.
+// Pops the item at index idx into the provided buffer dst, moving it's
+// ownership. If data is heap allocated, it needs to be freed by the caller.
 static void _vec_pop_into(Vec *v, void *dst, int idx) {
   void *popped_item = _vec_pop(v, idx);
   memcpy(dst, popped_item, _vec_data(v)->item_size);
@@ -220,9 +213,9 @@ static void _vec_pop_into(Vec *v, void *dst, int idx) {
 // Moves the ownership of the item to the vector.
 static bool _vec_insert(Vec *v, void *item, int idx) {
   if (!_inc_vec_cap(v)) {
-    return false; 
+    return false;
   }
-  
+
   if (!_is_valid_idx(v, idx)) {
     return false;
   }
@@ -244,19 +237,20 @@ static void _vec_print(Vec *v) {
   VecData *data = _vec_data(v);
 
   if (data->print == NULL) {
-    printf("WARN: Vector does not have 'print' defined. Cannot print vector.\n");
+    printf(
+        "WARN: Vector does not have 'print' defined. Cannot print vector.\n");
     return;
   }
 
   printf("[");
-  
+
   for (size_t i = 0; i < data->len; i++) {
-      char *repr = data->print(_vec_get_ptr(v, (int)i));
-      printf("%s", repr);
-      if (i != data->len - 1) {
-        printf(", ");
-      }
-      free(repr);
+    char *repr = data->print(_vec_get_ptr(v, (int)i));
+    printf("%s", repr);
+    if (i != data->len - 1) {
+      printf(", ");
+    }
+    free(repr);
   }
 
   printf("]");
